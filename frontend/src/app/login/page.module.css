@@ -1,0 +1,109 @@
+/* Container bọc ngoài toàn trang */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background-color: #f3f4f6; /* Màu nền nhẹ, tương đương bg-gray-100 */
+}
+
+/* Thẻ chứa form login */
+.loginCard {
+  width: 100%;
+  max-width: 28rem; /* khoảng 448px */
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Heading của trang */
+.heading {
+  text-align: center;
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: bold;
+  margin-bottom: 1.5rem; /* mb-6 */
+}
+
+/* Style cho thông báo lỗi */
+.errorBox {
+  background-color: #fecaca; /* bg-red-100 */
+  color: #b91c1c; /* text-red-700 */
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+/* Style cho form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Nhãn (label) */
+.label {
+  display: block;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+/* Input */
+.input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+}
+
+/* Thông báo lỗi bên dưới input */
+.inputError {
+  color: #dc2626; /* text-red-500 */
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Nút submit */
+.button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #2563eb; /* bg-blue-600 */
+  color: #fff;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.button:hover {
+  background-color: #1d4ed8; /* hover:bg-blue-700 */
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Text bên dưới form */
+.bottomText {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+/* Link style */
+.link {
+  color: #2563eb;
+  text-decoration: none;
+  transition: text-decoration 0.3s ease;
+}
+
+.link:hover {
+  text-decoration: underline;
+}

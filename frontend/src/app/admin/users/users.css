@@ -1,0 +1,92 @@
+.users-container {
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.users-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.users-info {
+  font-size: 14px;
+  margin-bottom: 16px;
+  color: #555;
+}
+
+.error-message {
+  background: #fee2e2;
+  border: 1px solid #f87171;
+  color: #b91c1c;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.refresh-btn {
+  background: #3b82f6;
+  color: #fff;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.users-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.user-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-item:last-child {
+  border-bottom: none;
+}
+
+.user-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.status-active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-inactive {
+  background: #fecaca;
+  color: #7f1d1d;
+}
+
+.toggle-btn {
+  margin-left: 12px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-deactivate {
+  background: #ef4444;
+  color: #fff;
+}
+
+.btn-activate {
+  background: #10b981;
+  color: #fff;
+}

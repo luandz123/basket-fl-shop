@@ -1,0 +1,23 @@
+.placeholder {
+  background-color: #2d3748; /* tương đương bg-gray-800 */
+  padding: 1rem;             /* tương đương p-4 */
+  color: #fff;               /* tương đương text-white */
+}
+
+.wrapper {
+  max-width: 1200px;         /* container: mx-auto */
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between; /* flex justify-between */
+  align-items: center;            /* items-center */
+}
+
+.brand {
+  font-size: 1.25rem;        /* tương đương text-xl */
+  font-weight: bold;         /* font-bold */
+}
+
+.links {
+  display: flex;
+  gap: 1rem;                /* space-x-4 */
+}

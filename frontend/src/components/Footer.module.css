@@ -1,0 +1,68 @@
+.footer {
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  padding: 2rem 0; /* tương đương py-8 */
+  margin-top: auto;
+}
+
+.container {
+  max-width: 80rem; /* max-w-7xl ~80rem */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 1rem; /* px-4 */
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem; /* gap-8 */
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.heading {
+  font-weight: 500;
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.textGray600 {
+  color: #718096;
+}
+
+.spaceY {
+  display: flex;
+  flex-direction: column;
+}
+
+.spaceY > li:not(:last-child) {
+  margin-bottom: 0.5rem; /* space-y-2 */
+}
+
+.link {
+  color: #718096;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.link:hover {
+  color: #2563eb; /* Giả sử màu primary là xanh lam */
+}
+
+.address {
+  color: #718096;
+  font-style: normal;
+}
+
+.bottom {
+  border-top: 1px solid #e5e7eb;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  text-align: center;
+  color: #6b7280; /* text-gray-500 */
+  font-size: 0.875rem; /* text-sm */
+}

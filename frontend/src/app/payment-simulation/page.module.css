@@ -1,0 +1,219 @@
+/* Common container */
+.container {
+  max-width: 28rem;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+/* Invalid Payment Request */
+.invalidContainer {
+  text-align: center;
+}
+.invalidHeading {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+.invalidMessage {
+  margin-bottom: 1rem;
+}
+
+/* Button common style */
+.btn {
+  display: inline-block;
+  background-color: #10B981; /* green-500 */
+  color: #fff;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none;
+}
+.btn:hover {
+  background-color: #059669;
+}
+
+/* Payment Success */
+.successContainer {
+  text-align: center;
+  max-width: 28rem;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+.successCard {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  padding: 2rem;
+}
+.successIcon {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1rem;
+  color: #10B981;
+}
+.successHeading {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+.successText {
+  color: #4B5563; /* text-gray-600 */
+  margin-bottom: 1.5rem;
+}
+.redirectText {
+  color: #4B5563;
+  margin-bottom: 1.5rem;
+}
+.viewOrderBtn {
+  background-color: #10B981;
+  color: #fff;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s;
+}
+.viewOrderBtn:hover {
+  background-color: #059669;
+}
+
+/* Payment Simulation Card */
+.paymentCard {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+/* Payment progress steps */
+.progressSteps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.stepCircle {
+  width: 2rem;
+  height: 2rem;
+  background-color: #10B981;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+}
+.stepLabel {
+  font-size: 0.75rem;
+}
+
+/* Payment details box */
+.paymentDetails {
+  border-bottom: 1px solid #E5E7EB;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.fontMedium {
+  font-weight: 500;
+}
+.fontBold {
+  font-weight: 700;
+}
+
+/* Error box */
+.errorBox {
+  background-color: #FECACA;
+  border: 1px solid #F87171;
+  color: #B91C1C;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+/* Payment details form section */
+.paymentSection {
+  margin-bottom: 1.5rem;
+}
+.paymentSectionHeading {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.paymentForm {
+  border: 1px solid #E5E7EB;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background-color: #F9FAFB;
+  margin-bottom: 1rem;
+}
+.paymentFormRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.inputField {
+  border: 1px solid #D1D5DB;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  width: 4rem;
+  text-align: right;
+}
+.selectField {
+  border: 1px solid #D1D5DB;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  width: 4rem;
+}
+
+/* Buttons group */
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+}
+.confirmButton {
+  flex: 1;
+  background-color: #10B981;
+  color: #fff;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.confirmButton:hover {
+  background-color: #059669;
+}
+.confirmButton:disabled {
+  background-color: #9CA3AF;
+  cursor: not-allowed;
+}
+.cancelButton {
+  flex: 1;
+  border: 1px solid #D1D5DB;
+  background-color: #F3F4F6;
+  color: #374151;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.cancelButton:hover {
+  background-color: #E5E7EB;
+}
