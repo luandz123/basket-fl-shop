@@ -1,3 +1,8 @@
+// THÊM: Load biến môi trường từ file .env trước khi thực hiện các import khác
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+// THÊM: Đảm bảo global crypto được thiết lập trước khi các module khác được import
 import * as crypto from 'crypto';
 if (!(global as any).crypto) {
   (global as any).crypto = crypto;
@@ -21,6 +26,7 @@ async function bootstrap() {
     credentials: true,
   });
   app.setGlobalPrefix('api');
+  
   const port = process.env.PORT || 3001;
   await app.listen(port);
   console.log(`Application is running on port ${port}`);
