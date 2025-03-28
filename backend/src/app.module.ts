@@ -25,26 +25,21 @@ import { HttpModule } from '@nestjs/axios';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        // Lấy giá trị HOST từ biến môi trường và đảm bảo là IPv4
-        const host = configService.get('DB_HOST', '127.0.0.1'); // Sử dụng 127.0.0.1 thay vì localhost
-        
+        // BẮT BUỘC sử dụng 127.0.0.1, bỏ qua giá trị từ biến môi trường
+        // để đảm bảo luôn kết nối qua IPv4
         return {
           type: 'mysql',
-          host: host,
+          host: '127.0.0.1', // Hardcode trực tiếp thay vì đọc từ biến môi trường
           port: +configService.get('DB_PORT', 3306),
           username: configService.get('DB_USERNAME', 'root'),
           password: configService.get('DB_PASSWORD', ''),
           database: configService.get('DB_DATABASE', 'flower_shop'),
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: configService.get('NODE_ENV') !== 'production',
-          // QUAN TRỌNG: Thêm cấu hình để sử dụng IPv4
+          // Xóa thuộc tính socketPath vì nó gây lỗi
+          // Thay vào đó sử dụng extra để cấu hình kết nối
           extra: {
-            socketPath: false,
-            // Cấu hình bổ sung buộc kết nối qua IPv4
-            connectAttributes: {
-              // Cấu hình để ưu tiên IPv4 hơn IPv6
-              preferIPv4: true,
-            },
+            // Các thiết lập bổ sung để đảm bảo kết nối IPv4
           },
           // QUAN TRỌNG: Tăng thời gian timeout để cho phép kết nối lâu hơn khi deploy
           connectTimeout: 60000,
