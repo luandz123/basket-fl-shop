@@ -24,16 +24,37 @@ import { HttpModule } from '@nestjs/axios';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 3306),
-        username: configService.get('DB_USERNAME', 'root'),
-        password: configService.get('DB_PASSWORD', ''),
-        database: configService.get('DB_DATABASE', 'flower_shop'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get('NODE_ENV') !== 'production',
-      }),
+      useFactory: (configService: ConfigService) => {
+        // Lấy giá trị HOST từ biến môi trường và đảm bảo là IPv4
+        const host = configService.get('DB_HOST', '127.0.0.1'); // Sử dụng 127.0.0.1 thay vì localhost
+        
+        return {
+          type: 'mysql',
+          host: host,
+          port: +configService.get('DB_PORT', 3306),
+          username: configService.get('DB_USERNAME', 'root'),
+          password: configService.get('DB_PASSWORD', ''),
+          database: configService.get('DB_DATABASE', 'flower_shop'),
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          synchronize: configService.get('NODE_ENV') !== 'production',
+          // QUAN TRỌNG: Thêm cấu hình để sử dụng IPv4
+          extra: {
+            socketPath: false,
+            // Cấu hình bổ sung buộc kết nối qua IPv4
+            connectAttributes: {
+              // Cấu hình để ưu tiên IPv4 hơn IPv6
+              preferIPv4: true,
+            },
+          },
+          // QUAN TRỌNG: Tăng thời gian timeout để cho phép kết nối lâu hơn khi deploy
+          connectTimeout: 60000,
+          // Bật thử lại khi kết nối thất bại
+          retryAttempts: 10,
+          retryDelay: 3000,
+          // Ghi log kết nối
+          logging: ['error', 'warn'],
+        };
+      },
       inject: [ConfigService],
     }),
     ServeStaticModule.forRoot({
