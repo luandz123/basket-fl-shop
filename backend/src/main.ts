@@ -1,13 +1,14 @@
-
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
-import  helmet from 'helmet';
-import * as compression from 'compression';
 import * as crypto from 'crypto';
 if (!(global as any).crypto) {
   (global as any).crypto = crypto;
 }
+
+const { NestFactory } = require('@nestjs/core');
+const { AppModule } = require('./app.module');
+const { ValidationPipe } = require('@nestjs/common');
+const helmet = require('helmet');
+const compression = require('compression');
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
