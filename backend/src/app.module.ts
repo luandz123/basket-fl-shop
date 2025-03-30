@@ -34,7 +34,7 @@ import { HttpModule } from '@nestjs/axios';
         
         if (isProduction) {
           // Sử dụng Railway Database trong môi trường sản xuất
-          console.log('Sử dụng Railway Database');
+          console.log('Sử dụng Railway Database (Public URL)');
           return {
             type: 'mysql',
             host: configService.get('RAILWAY_DB_HOST'),
