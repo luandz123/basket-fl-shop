@@ -5,17 +5,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { APP_GUARD } from '@nestjs/core';
 import { join } from 'path';
 
-import { UsersModule } from './users/users.module';
-import { ProductsModule } from './products/products.module';
-import { CategoriesModule } from './categories/categories.module';
-import { OrdersModule } from './orders/orders.module';
-import { AuthModule } from './auth/auth.module';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { CartModule } from './cart/cart.module';
-import { PaymentController } from './payment/payment.controller';
-import { PaymentService } from './payment/payment.service';
-import { PaymentModule } from './payment/payment.module';
-import { HttpModule } from '@nestjs/axios';
+// ...các import khác
 
 @Module({
   imports: [
@@ -25,25 +15,24 @@ import { HttpModule } from '@nestjs/axios';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        // Kiểm tra xem ứng dụng có đang chạy trên Render/production không
-        const isProduction = configService.get('IS_PRODUCTION') === 'true' || 
-                           process.env.RENDER === 'true';
+        // Phát hiện môi trường Railway
+        const isRailway = process.env.RAILWAY_STATIC_URL || 
+                         process.env.RAILWAY_ENVIRONMENT;
         
-        // In ra thông tin để debug
-        console.log('Môi trường:', isProduction ? 'Production' : 'Development');
+        console.log('Môi trường:', isRailway ? 'Railway (Production)' : 'Local');
         
-        if (isProduction) {
-          // Sử dụng Railway Database trong môi trường sản xuất
-          console.log('Sử dụng Railway Database (Public URL)');
+        if (isRailway) {
+          // Cấu hình cho Railway - sử dụng biến môi trường RAILWAY cung cấp
+          console.log('Sử dụng Railway Database');
           return {
             type: 'mysql',
-            host: configService.get('RAILWAY_DB_HOST'),
-            port: +configService.get('RAILWAY_DB_PORT', 3306),
-            username: configService.get('RAILWAY_DB_USERNAME'),
-            password: configService.get('RAILWAY_DB_PASSWORD'),
-            database: configService.get('RAILWAY_DB_NAME'),
+            host: configService.get('MYSQLHOST', 'localhost'),
+            port: +configService.get('MYSQLPORT', 3306),
+            username: configService.get('MYSQLUSER', 'root'),
+            password: configService.get('MYSQLPASSWORD', ''),
+            database: configService.get('MYSQLDATABASE', 'railway'),
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            synchronize: false, // Không tự động đồng bộ schema trong production
+            synchronize: false, // Không đồng bộ schema trong production
             ssl: configService.get('RAILWAY_DB_SSL') === 'true' ? {
               rejectUnauthorized: false,
             } : undefined,
@@ -53,7 +42,7 @@ import { HttpModule } from '@nestjs/axios';
             logging: ['error', 'warn'],
           };
         } else {
-          // Sử dụng Local Database trong môi trường phát triển
+          // Cấu hình local
           console.log('Sử dụng Local Database');
           return {
             type: 'mysql',
@@ -63,7 +52,7 @@ import { HttpModule } from '@nestjs/axios';
             password: configService.get('DB_PASSWORD', 'luandz123'),
             database: configService.get('DB_DATABASE', 'gio_hoa'),
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            synchronize: true, // Có thể bật trong development
+            synchronize: true,
             connectTimeout: 30000,
             logging: true,
           };
@@ -75,22 +64,8 @@ import { HttpModule } from '@nestjs/axios';
       rootPath: join(__dirname, '..', 'upload'),
       serveRoot: '/upload',
     }),
-    HttpModule,
-    UsersModule,
-    ProductsModule,
-    CategoriesModule,
-    OrdersModule,
-    AuthModule,
-    CartModule,
-    PaymentModule
+    // ...các module khác
   ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-    PaymentService,
-  ],
-  controllers: [PaymentController],
+  // ...phần còn lại của module
 })
 export class AppModule {}
