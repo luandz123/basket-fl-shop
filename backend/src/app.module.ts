@@ -25,30 +25,49 @@ import { HttpModule } from '@nestjs/axios';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        // BẮT BUỘC sử dụng 127.0.0.1, bỏ qua giá trị từ biến môi trường
-        // để đảm bảo luôn kết nối qua IPv4
-        return {
-          type: 'mysql',
-          host: '127.0.0.1', // Hardcode trực tiếp thay vì đọc từ biến môi trường
-          port: +configService.get('DB_PORT', 3306),
-          username: configService.get('DB_USERNAME', 'root'),
-          password: configService.get('DB_PASSWORD', ''),
-          database: configService.get('DB_DATABASE', 'flower_shop'),
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          synchronize: configService.get('NODE_ENV') !== 'production',
-          // Xóa thuộc tính socketPath vì nó gây lỗi
-          // Thay vào đó sử dụng extra để cấu hình kết nối
-          extra: {
-            // Các thiết lập bổ sung để đảm bảo kết nối IPv4
-          },
-          // QUAN TRỌNG: Tăng thời gian timeout để cho phép kết nối lâu hơn khi deploy
-          connectTimeout: 60000,
-          // Bật thử lại khi kết nối thất bại
-          retryAttempts: 10,
-          retryDelay: 3000,
-          // Ghi log kết nối
-          logging: ['error', 'warn'],
-        };
+        // Kiểm tra xem ứng dụng có đang chạy trên Render/production không
+        const isProduction = configService.get('IS_PRODUCTION') === 'true' || 
+                           process.env.RENDER === 'true';
+        
+        // In ra thông tin để debug
+        console.log('Môi trường:', isProduction ? 'Production' : 'Development');
+        
+        if (isProduction) {
+          // Sử dụng Railway Database trong môi trường sản xuất
+          console.log('Sử dụng Railway Database');
+          return {
+            type: 'mysql',
+            host: configService.get('RAILWAY_DB_HOST'),
+            port: +configService.get('RAILWAY_DB_PORT', 3306),
+            username: configService.get('RAILWAY_DB_USERNAME'),
+            password: configService.get('RAILWAY_DB_PASSWORD'),
+            database: configService.get('RAILWAY_DB_NAME'),
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            synchronize: false, // Không tự động đồng bộ schema trong production
+            ssl: configService.get('RAILWAY_DB_SSL') === 'true' ? {
+              rejectUnauthorized: false,
+            } : undefined,
+            connectTimeout: 60000,
+            retryAttempts: 10,
+            retryDelay: 3000,
+            logging: ['error', 'warn'],
+          };
+        } else {
+          // Sử dụng Local Database trong môi trường phát triển
+          console.log('Sử dụng Local Database');
+          return {
+            type: 'mysql',
+            host: configService.get('DB_HOST', '127.0.0.1'),
+            port: +configService.get('DB_PORT', 3307),
+            username: configService.get('DB_USERNAME', 'root'),
+            password: configService.get('DB_PASSWORD', 'luandz123'),
+            database: configService.get('DB_DATABASE', 'gio_hoa'),
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            synchronize: true, // Có thể bật trong development
+            connectTimeout: 30000,
+            logging: true,
+          };
+        }
       },
       inject: [ConfigService],
     }),
