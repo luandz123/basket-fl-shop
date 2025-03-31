@@ -1,11 +1,17 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { APP_GUARD } from '@nestjs/core';
 import { join } from 'path';
-
-// ...các import khác
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { ProductsModule } from './products/products.module';
+import { CategoriesModule } from './categories/categories.module';
+import { CartModule } from './cart/cart.module';
+import { OrdersModule } from './orders/orders.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -16,26 +22,27 @@ import { join } from 'path';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         // Phát hiện môi trường Railway hoặc Vercel
-        const isProduction = process.env.VERCEL || 
-                           process.env.RAILWAY_STATIC_URL || 
-                           process.env.RAILWAY_ENVIRONMENT;
+        const isProduction = process.env.NODE_ENV === 'production';
         
-        console.log('Môi trường:', isProduction ? 'Production (Vercel/Railway)' : 'Local');
+        console.log('Môi trường:', isProduction ? 'Production (Railway)' : 'Local');
+        
+        // Thử kết nối đến database
+        console.log('Đang kết nối đến database...');
         
         if (isProduction) {
-          // Cấu hình cho Railway/Vercel - sử dụng biến môi trường cung cấp
+          // Cấu hình cho Railway - sử dụng biến môi trường cung cấp
           console.log('Sử dụng Production Database');
           return {
             type: 'mysql',
-            host: configService.get('MYSQLHOST', 'localhost'),
-            port: +configService.get('MYSQLPORT', 3306),
-            username: configService.get('MYSQLUSER', 'root'),
-            password: configService.get('MYSQLPASSWORD', ''),
-            database: configService.get('MYSQLDATABASE', 'railway'),
+            host: configService.get('MYSQLHOST'),
+            port: +configService.get('MYSQLPORT'),
+            username: configService.get('MYSQLUSER'),
+            password: configService.get('MYSQLPASSWORD'),
+            database: configService.get('MYSQLDATABASE'),
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: false, // Không đồng bộ schema trong production
             ssl: {
-              rejectUnauthorized: false, // Quan trọng cho Railway MySQL
+              rejectUnauthorized: true, // Quan trọng cho Railway MySQL
             },
             connectTimeout: 60000,
             retryAttempts: 15,
@@ -53,10 +60,11 @@ import { join } from 'path';
         } else {
           // Cấu hình local
           console.log('Sử dụng Local Database');
+          console.log(`Host: ${configService.get('DB_HOST')}, Port: ${configService.get('DB_PORT')}`);
           return {
             type: 'mysql',
             host: configService.get('DB_HOST', '127.0.0.1'),
-            port: +configService.get('DB_PORT', 3307),
+            port: +configService.get('DB_PORT', 3306),
             username: configService.get('DB_USERNAME', 'root'),
             password: configService.get('DB_PASSWORD', 'luandz123'),
             database: configService.get('DB_DATABASE', 'gio_hoa'),
@@ -64,6 +72,9 @@ import { join } from 'path';
             synchronize: true,
             connectTimeout: 30000,
             logging: true,
+            retryAttempts: 10,
+            retryDelay: 3000,
+            autoLoadEntities: true,
           };
         }
       },
@@ -73,8 +84,15 @@ import { join } from 'path';
       rootPath: join(__dirname, '..', 'upload'),
       serveRoot: '/upload',
     }),
-    // ...các module khác
+    UsersModule,
+    AuthModule,
+    ProductsModule,
+    CategoriesModule,
+    CartModule,
+    OrdersModule,
+    PaymentModule,
   ],
-  // ...phần còn lại của module
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
