@@ -6,7 +6,7 @@ import AuthProvider from '@/components/AuthProvider';
 import NavbarWrapper from '@/components/NavbarWrapper';
 import Script from 'next/script';
 import Footer from '@/components/Footer';
-import styles from "./layout.module.css";
+import styles from './layout.module.css'; // Add this import
 
 const poppins = Poppins({ 
   weight: ['300', '400', '500', '600', '700'],

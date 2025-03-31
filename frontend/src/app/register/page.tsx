@@ -27,8 +27,9 @@ export default function RegisterPage() {
     try {
       await registerUser(data);
       reset();
-    } catch (error: any) {
-      alert(error.message);
+    } catch (err: unknown) {
+      console.error('Registration error:', err);
+      alert((err as Error).message);
     }
   };
 

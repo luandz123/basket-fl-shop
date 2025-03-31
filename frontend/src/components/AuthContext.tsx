@@ -10,14 +10,21 @@ const getCurrentUser = async () => {
   return stored ? JSON.parse(stored) : null;
 };
 
+interface User {
+  id: number;
+  email: string;
+  name?: string;
+  role?: string;
+}
+
 interface AuthContextType {
-  user: any;
+  user: unknown;
   isAdmin: boolean;
   loading: boolean;
-  login: (userData: any) => void;
+  login: (userData: unknown) => void;
   logout: () => void;
   signIn: (credentials: { email: string; password: string }) => Promise<void>;
-  registerUser: (userData: any) => Promise<void>;
+  registerUser: (userData: { email: string; password: string; name: string }) => Promise<void>;
   loginUser: (credentials: { email: string; password: string }) => Promise<void>;
 }
 
@@ -28,7 +35,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<unknown>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -38,7 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const userData = await getCurrentUser();
         setUser(userData);
-        setIsAdmin(userData?.role === 'admin');
+        setIsAdmin((userData as User)?.role === 'admin');
       } catch (error) {
         console.error('Error fetching user:', error);
         setUser(null);
@@ -51,9 +58,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     fetchUser();
   }, []);
 
-  const login = (userData: any) => {
+  const login = (userData: unknown) => {
     setUser(userData);
-    setIsAdmin(userData?.role === 'admin');
+    setIsAdmin((userData as User)?.role === 'admin');
     localStorage.setItem('user', JSON.stringify(userData));
   };
 
@@ -88,7 +95,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return signIn(credentials);
   };
 
-  const registerUser = async (userData: any) => {
+  const registerUser = async (userData: { email: string; password: string; name: string }) => {
     try {
       const response = await registerApi(userData);
       login(response.user);

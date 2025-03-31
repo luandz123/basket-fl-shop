@@ -24,7 +24,6 @@ export default function CartPage() {
   const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [total, setTotal] = useState(0);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [updating, setUpdating] = useState<number | null>(null);
   const [removingItem, setRemovingItem] = useState<number | null>(null);
@@ -57,11 +56,10 @@ export default function CartPage() {
           setCartItems(cartData);
         } else {
           setCartItems([]);
-          setError('Dịch vụ giỏ hàng hiện không khả dụng. Vui lòng thử lại sau.');
         }
-      } catch (error) {
+      } catch (err) {
+        console.error("Error fetching cart:", err);
         setCartItems([]);
-        setError('Không thể tải giỏ hàng của bạn. Vui lòng thử lại sau.');
       } finally {
         setIsLoading(false);
       }
@@ -87,8 +85,8 @@ export default function CartPage() {
           item.id === itemId ? { ...item, quantity: newQuantity } : item
         )
       );
-    } catch (error) {
-      setError('Không thể cập nhật số lượng. Vui lòng thử lại.');
+    } catch (err) {
+      console.error("Error updating cart item:", err);
     } finally {
       setUpdating(null);
     }
@@ -99,8 +97,8 @@ export default function CartPage() {
       setRemovingItem(productId);
       await removeFromCart(productId);
       setCartItems(prev => prev.filter(item => item.product.id !== productId));
-    } catch (error) {
-      setError('Không thể xóa sản phẩm. Vui lòng thử lại.');
+    } catch (err) {
+      console.error("Error removing item from cart:", err);
     } finally {
       setRemovingItem(null);
     }
@@ -108,7 +106,6 @@ export default function CartPage() {
 
   const handleCheckout = () => {
     if (cartItems.length === 0) {
-      setError('Giỏ hàng của bạn đang trống.');
       return;
     }
     router.push('/checkout');
@@ -133,12 +130,6 @@ export default function CartPage() {
         </Link>
       </div>
 
-      {error && (
-        <div className="error-message">
-          {error}
-        </div>
-      )}
-
       {cartItems.length > 0 ? (
         <>
           <div className="cart-items">
@@ -153,6 +144,8 @@ export default function CartPage() {
                       <SafeImage
                         src={item.product.image}
                         alt={item.product.name}
+                        width={100}
+                        height={100}
                       />
                     </div>
                     <div className="item-details">

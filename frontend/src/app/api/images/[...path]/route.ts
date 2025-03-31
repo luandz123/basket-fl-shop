@@ -2,41 +2,43 @@ import { NextRequest } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+// Define the route handler with proper typing for Next.js App Router
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  context: { params: Promise<{ path: string[] }> } // params is a Promise
 ) {
   try {
-    // Kết hợp các phần của path
-    const imagePath = params.path.join('/');
-    
-    // Xác định đường dẫn tới thư mục upload của backend
+    // Await the params Promise to get the actual path array
+    const resolvedParams = await context.params;
+    const imagePath = resolvedParams.path.join('/');
+
+    // Determine the path to the backend upload directory
     const uploadDir = path.join(process.cwd(), '..', 'backend', 'upload');
     const filePath = path.join(uploadDir, imagePath);
-    
-    // Kiểm tra xem file có tồn tại không
+
+    // Check if the file exists
     if (!fs.existsSync(filePath)) {
       console.error(`Image not found: ${filePath}`);
       return new Response('Image not found', { status: 404 });
     }
-    
-    // Đọc file hình ảnh
+
+    // Read the image file
     const imageBuffer = fs.readFileSync(filePath);
-    
-    // Xác định kiểu MIME từ phần mở rộng của file
+
+    // Determine MIME type from file extension
     const ext = path.extname(imagePath).toLowerCase();
     let contentType = 'application/octet-stream';
-    
+
     if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
     else if (ext === '.png') contentType = 'image/png';
     else if (ext === '.gif') contentType = 'image/gif';
     else if (ext === '.webp') contentType = 'image/webp';
-    
-    // Trả về hình ảnh với header phù hợp
+
+    // Return the image with appropriate headers
     return new Response(imageBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=86400', // Cache trong 1 ngày
+        'Cache-Control': 'public, max-age=86400', // Cache for 1 day
       },
     });
   } catch (error) {
@@ -44,3 +46,6 @@ export async function GET(
     return new Response('Error serving image', { status: 500 });
   }
 }
+
+// For Next.js route handlers in App Router
+export const dynamic = 'force-dynamic';

@@ -14,6 +14,12 @@ interface User {
   isActive: boolean;
 }
 
+interface ErrorWithResponse extends Error {
+  response?: {
+    status: number;
+  };
+}
+
 export default function AdminUsersPage() {
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
@@ -31,9 +37,9 @@ export default function AdminUsersPage() {
         const usersData = await getAdminUsers();
         setUsers(usersData);
         setError(null);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error fetching users:', err);
-        if (err?.response?.status === 401) router.push('/login');
+        if ((err as ErrorWithResponse)?.response?.status === 401) router.push('/login');
         else setError('Không thể tải danh sách người dùng. Vui lòng thử lại.');
       } finally {
         setIsLoadingUsers(false);
@@ -47,9 +53,9 @@ export default function AdminUsersPage() {
       await updateUser(id, { isActive: !isActive });
       setUsers(prev => prev.map(u => (u.id === id ? { ...u, isActive: !isActive } : u)));
       setTimeout(() => setRefreshTrigger(prev => prev + 1), 500);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error updating user status:', err);
-      if (err?.response?.status === 401) router.push('/login');
+      if ((err as ErrorWithResponse)?.response?.status === 401) router.push('/login');
       else alert('Không thể cập nhật trạng thái người dùng.');
     }
   };
@@ -105,8 +111,4 @@ export default function AdminUsersPage() {
       )}
     </div>
   );
-}
-
-function clearAuthToken() {
-  throw new Error('Function not implemented.');
 }

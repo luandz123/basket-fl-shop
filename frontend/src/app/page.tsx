@@ -1,4 +1,4 @@
-import Image from "next/image";
+import React from 'react';
 import { getProducts } from "@/lib/api";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";

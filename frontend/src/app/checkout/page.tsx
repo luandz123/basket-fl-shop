@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import useAuth from '@/hooks/useAuth';
 import { getCart, createOrder, initiatePayment } from '@/lib/api';
 import Link from 'next/link';
@@ -23,7 +23,6 @@ interface CartItem {
 const CheckoutPage = () => {
   const { user } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [total, setTotal] = useState(0);
@@ -193,6 +192,8 @@ const CheckoutPage = () => {
                   <SafeImage
                     src={item.product.image}
                     alt={item.product.name}
+                    width={100}
+                    height={100}
                   />
                 </div>
                 <div className="item-details">

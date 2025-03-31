@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import useAuth from '@/hooks/useAuth';
 import { getOrders } from '@/lib/api';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -29,14 +29,14 @@ interface Order {
   items: OrderItem[];
 }
 
-export default function OrdersPage() {
+// Create a client component that uses useSearchParams
+function OrdersContent() {
   const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
 
   // Query params sau khi đơn hàng được tạo thành công
   const success = searchParams.get('success');
@@ -51,7 +51,6 @@ export default function OrdersPage() {
     const fetchOrders = async () => {
       try {
         setIsLoading(true);
-        setError('');
         const response = await getOrders({ page: 1, limit: 10 });
         console.log('Orders response:', response);
         if (response && response.orders) {
@@ -60,12 +59,10 @@ export default function OrdersPage() {
           setOrders(response);
         } else {
           setOrders([]);
-          setError('Unexpected orders data format.');
         }
       } catch (err) {
         console.error('Error fetching orders:', err);
         setOrders([]);
-        setError('Failed to load orders. Please try again.');
       } finally {
         setIsLoading(false);
       }
@@ -102,7 +99,7 @@ export default function OrdersPage() {
         hour: '2-digit',
         minute: '2-digit'
       });
-    } catch (error) {
+    } catch {
       return 'Invalid date';
     }
   };
@@ -120,28 +117,17 @@ export default function OrdersPage() {
 
   if (isLoading) {
     return (
-      <div className={styles.container}>
-        <h1 className={styles.heading}>Đơn hàng của bạn</h1>
-        <div className={styles.loader}></div>
-      </div>
+      <div className={styles.loader}></div>
     );
   }
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.heading}>Đơn hàng của bạn</h1>
-
+    <>
       {success && (
         <div className={styles.successAlert}>
           <p>Đơn hàng của bạn đã được đặt thành công!</p>
           {orderId && <p>Mã đơn hàng: {orderId}</p>}
           <p>Bạn có thể theo dõi trạng thái đơn hàng của mình ở đây.</p>
-        </div>
-      )}
-
-      {error && (
-        <div className={styles.errorAlert}>
-          {error}
         </div>
       )}
 
@@ -221,6 +207,20 @@ export default function OrdersPage() {
           </Link>
         </div>
       )}
+    </>
+  );
+}
+
+// Main page component with Suspense
+export default function OrdersPage() {
+  return (
+    <div className={styles.container}>
+      <h1 className={styles.heading}>Đơn hàng của bạn</h1>
+      <Suspense fallback={
+        <div className={styles.loader}></div>
+      }>
+        <OrdersContent />
+      </Suspense>
     </div>
   );
 }

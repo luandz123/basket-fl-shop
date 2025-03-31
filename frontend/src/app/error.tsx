@@ -18,9 +18,9 @@ export default function Error({
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
-        <h2 className="text-2xl font-bold text-red-600 mb-4">Something went wrong!</h2>
+        <h2 className="text-2xl font-bold text-red-600 mb-4">Something went wrong &apos;oops&apos;</h2>
         <p className="text-gray-700 mb-4">
-          We've encountered an error while loading this page.
+          We&apos;ve encountered an error while loading this page.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <button

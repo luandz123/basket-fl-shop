@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { processPayment } from '@/lib/api';
 import Link from 'next/link';
 import styles from './page.module.css';
 
-export default function PaymentSimulationPage() {
+// Component that uses useSearchParams must be wrapped in Suspense
+function PaymentSimulationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [processing, setProcessing] = useState(false);
@@ -228,5 +229,21 @@ export default function PaymentSimulationPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Main component with Suspense
+export default function PaymentSimulationPage() {
+  return (
+    <Suspense fallback={
+      <div className={styles.container}>
+        <div className={styles.loadingContainer}>
+          <div className={styles.loader}></div>
+          <p>Đang tải thông tin thanh toán...</p>
+        </div>
+      </div>
+    }>
+      <PaymentSimulationContent />
+    </Suspense>
   );
 }

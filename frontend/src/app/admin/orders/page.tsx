@@ -46,7 +46,6 @@ export default function AdminOrdersPage() {
     });
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(10);
     const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
     const [processingOrder, setProcessingOrder] = useState<number | null>(null);
     const [viewMode, setViewMode] = useState<'all' | 'pending' | 'processing' | 'shipped' | 'delivered'>('all');
@@ -57,9 +56,9 @@ export default function AdminOrdersPage() {
             setLoading(true);
             setError(null);
 
-            const params: any = {
+            const params: Record<string, string | number> = {
                 page: currentPage,
-                limit: itemsPerPage,
+                limit: 10,
             };
 
             // Prioritize viewMode over filter.status
@@ -91,14 +90,14 @@ export default function AdminOrdersPage() {
 
             const orderData = response.orders || response;
             setOrders(orderData);
-            setTotalPages(response.totalPages || Math.ceil((response.totalItems || 0) / itemsPerPage) || 1);
-        } catch (err: any) {
+            setTotalPages(response.totalPages || Math.ceil((response.totalItems || 0) / 10) || 1);
+        } catch (err: unknown) {
             console.error('Error fetching orders:', err);
-            setError(`Failed to load orders: ${err.message || 'Unknown error'}`);
+            setError(`Failed to load orders: ${(err as Error)?.message || 'Unknown error'}`);
         } finally {
             setLoading(false);
         }
-    }, [currentPage, itemsPerPage, viewMode, filter]);
+    }, [currentPage, viewMode, filter]);
 
     useEffect(() => {
         if (!user) {
@@ -130,7 +129,7 @@ export default function AdminOrdersPage() {
             setOrders(prevOrders =>
                 prevOrders.map(order => (order.id === id ? { ...order, status: newStatus } : order))
             );
-        } catch (err) {
+        } catch (err: unknown) {
             console.error('Error updating order status:', err);
             setError('Failed to update order status.');
         } finally {
@@ -155,7 +154,7 @@ export default function AdminOrdersPage() {
             setOrders(prevOrders =>
                 prevOrders.map(order => (order.id === id ? { ...order, paymentStatus: newPaymentStatus } : order))
             );
-        } catch (err) {
+        } catch (err: unknown) {
             console.error('Error updating payment status:', err);
             setError('Failed to update payment status.');
         } finally {
@@ -216,7 +215,7 @@ export default function AdminOrdersPage() {
                 )
             );
             setSelectedOrders([]);
-        } catch (err) {
+        } catch (err: unknown) {
             console.error('Error performing bulk action:', err);
             setError('Failed to update orders.');
         } finally {
@@ -250,7 +249,7 @@ export default function AdminOrdersPage() {
                 minute: '2-digit',
             };
             return new Date(dateString).toLocaleDateString(undefined, options);
-        } catch (error) {
+        } catch {
             return 'Invalid date';
         }
     };

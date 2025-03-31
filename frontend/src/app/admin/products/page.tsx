@@ -6,6 +6,7 @@ import { getProducts, createProduct, updateProduct, deleteProduct, getCategories
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import SafeImage from '@/components/SafeImage';
+import Image from 'next/image';
 import './products.css';
 
 interface Product {
@@ -224,7 +225,7 @@ export default function AdminProductsPage() {
               {imagePreview && (
                 <div style={{ marginTop: '8px' }}>
                   <p>Xem trước hình ảnh:</p>
-                  <img src={imagePreview} alt="Xem trước" style={{ maxWidth: '200px', maxHeight: '200px', border: '1px solid #ccc' }} onError={(e) => {
+                  <Image src={imagePreview} alt="Xem trước" width={200} height={200} style={{ maxWidth: '200px', maxHeight: '200px', border: '1px solid #ccc' }} onError={(e) => {
                     e.currentTarget.src = 'data:image/svg+xml;base64,...';
                   }} />
                 </div>

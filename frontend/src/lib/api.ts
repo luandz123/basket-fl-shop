@@ -68,11 +68,18 @@ if (isBrowser()) {
   );
 }
 
+// REMOVING the createSafeMethod function since it's not being used
+// This removes the ESLint warnings
+
 export function setAuthToken(token: string): void {
   setToken(token);
   if (isBrowser()) {
     apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
+}
+export async function createCategory(data: { name: string }) {
+  const response = await apiClient.post('/admin/categories', data);
+  return response.data;
 }
 
 export function clearAuthToken(): void {
@@ -99,20 +106,51 @@ export async function login(data: { email: string; password: string }) {
     });
     
     return response.data;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Login API error:', error);
     throw error;
   }
 }
 
+// Make getProducts safe for SSR
 export async function getProducts(params: { page?: number; limit?: number; categoryId?: number } = {}) {
-  const response = await apiClient.get('/products', { params });
-  return response.data;
+  try {
+    const response = await apiClient.get('/products', { params });
+    return response.data;
+  } catch (error) {
+    if (!isBrowser()) {
+      console.error('Product fetch error (server-side):', error);
+      return { data: [] }; // Return empty data for server-side rendering
+    }
+    throw error; // Re-throw on client side
+  }
+}
+
+// Make getCategories safe for SSR
+export async function getCategories() {
+  try {
+    const response = await apiClient.get('/categories');
+    return response.data;
+  } catch (error) {
+    if (!isBrowser()) {
+      console.error('Categories fetch error (server-side):', error);
+      return []; // Return empty array for server-side rendering
+    }
+    throw error; // Re-throw on client side
+  }
 }
 
 export async function getProductById(id: number) {
-  const response = await apiClient.get(`/products/${id}`);
-  return response.data;
+  try {
+    const response = await apiClient.get(`/products/${id}`);
+    return response.data;
+  } catch (error) {
+    if (!isBrowser()) {
+      console.error(`Product fetch error for ID ${id} (server-side):`, error);
+      return null; // Return null for server-side rendering
+    }
+    throw error; // Re-throw on client side
+  }
 }
 
 // Unified addToCart function that works with both old and new formats
@@ -151,9 +189,11 @@ export async function createOrder(data: {
   items?: Array<{ productId: number; quantity: number; price: number }>; 
   address: string; 
   paymentMethod: string;
+  customerName?: string;
+  phone?: string;
 }) {
   // We will build the request body based on what's provided
-  const requestBody: any = {
+  const requestBody: Record<string, unknown> = {
     address: data.address,
     paymentMethod: data.paymentMethod
   };
@@ -161,6 +201,14 @@ export async function createOrder(data: {
   // If items are provided explicitly, use them
   if (data.items) {
     requestBody.items = data.items;
+  }
+
+  if (data.customerName) {
+    requestBody.customerName = data.customerName;
+  }
+
+  if (data.phone) {
+    requestBody.phone = data.phone;
   }
   
   const response = await apiClient.post('/orders', requestBody);
@@ -178,7 +226,7 @@ export async function getUserProfile() {
     const response = await apiClient.get('/users/me');
     console.log('User profile fetched successfully');
     return response.data;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching user profile:', error);
     throw error;
   }
@@ -209,17 +257,6 @@ export async function updateProduct(id: number, data: Partial<{ name: string; pr
 
 export async function deleteProduct(id: number) {
   const response = await apiClient.delete(`/admin/products/${id}`);
-  return response.data;
-}
-
-// Admin APIs
-export async function getCategories() {
-  const response = await apiClient.get('/categories');
-  return response.data;
-}
-
-export async function createCategory(data: { name: string }) {
-  const response = await apiClient.post('/admin/categories', data);
   return response.data;
 }
 
@@ -267,11 +304,12 @@ export async function initiatePayment(data: { orderId: number, customerName: str
       message: "Payment session created",
       paymentUrl: "/payment-simulation" // URL này sẽ được sử dụng trong môi trường thực
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Failed to initiate payment:', error);
     return { success: false, message: 'Failed to initiate payment' };
   }
 }
+
 // Thêm hàm processPayment nếu chưa có
 export async function processPayment(data: { orderId: number, paymentStatus: string }) {
   try {
@@ -281,7 +319,7 @@ export async function processPayment(data: { orderId: number, paymentStatus: str
       paymentData: { status: data.paymentStatus }
     });
     return response.data;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Payment processing error:', error);
     return { success: false, message: 'Payment processing failed' };
   }

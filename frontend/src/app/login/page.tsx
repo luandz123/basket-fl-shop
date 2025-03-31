@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import useAuth from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -13,7 +13,16 @@ interface FormData {
   password: string;
 }
 
-export default function LoginPage() {
+interface ApiError extends Error {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
+
+// Component that uses useSearchParams
+function LoginContent() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
   const { login, user, loading } = useAuth();
   const router = useRouter();
@@ -52,9 +61,12 @@ export default function LoginPage() {
       } else {
         throw new Error('Phản hồi đăng nhập không chứa mã thông báo');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Lỗi gửi đăng nhập:', error);
-      setError(error.response?.data?.message || 'Đăng nhập không thành công. Vui lòng kiểm tra thông tin đăng nhập của bạn.');
+      setError(
+        ((error as ApiError)?.response?.data?.message) || 
+        'Đăng nhập không thành công. Vui lòng kiểm tra thông tin đăng nhập của bạn.'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -124,5 +136,24 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+// Main page component with Suspense
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className={styles.container}>
+        <div className={styles.loginCard}>
+          <h1 className={styles.heading}>Đăng nhập</h1>
+          <div className={styles.loadingContainer}>
+            <div className={styles.loader}></div>
+            <p>Đang tải...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }

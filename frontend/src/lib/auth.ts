@@ -43,6 +43,30 @@ export const clearAuthToken = () => {
   }
 };
 
+// Add this new function that's imported in AdminCheck.tsx
+export const getDecodedToken = (): DecodedToken | null => {
+  try {
+    const token = getAuthToken();
+    if (!token) return null;
+    
+    return jwtDecode<DecodedToken>(token);
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
+};
+
+// Also add the isAdmin function that's imported in AdminCheck.tsx
+export const isAdmin = (): boolean => {
+  try {
+    const decoded = getDecodedToken();
+    return decoded?.role === 'admin';
+  } catch (error) {
+    console.error('Error checking admin status:', error);
+    return false;
+  }
+};
+
 export const isTokenValid = (): boolean => {
   try {
     const token = getAuthToken();
