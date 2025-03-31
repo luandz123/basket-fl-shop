@@ -34,15 +34,20 @@ import { join } from 'path';
             database: configService.get('MYSQLDATABASE', 'railway'),
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: false, // Không đồng bộ schema trong production
-            ssl: configService.get('MYSQL_SSL') === 'true' ? {
-              rejectUnauthorized: false,
-            } : undefined,
+            ssl: {
+              rejectUnauthorized: false, // Quan trọng cho Railway MySQL
+            },
             connectTimeout: 60000,
-            retryAttempts: 10,
-            retryDelay: 3000,
+            retryAttempts: 15,
+            retryDelay: 5000,
             logging: ['error', 'warn'],
+            keepConnectionAlive: true,
+            autoLoadEntities: true,
             extra: {
-              connectionLimit: 5 // Giới hạn kết nối cho serverless
+              connectionLimit: 10,
+              queueLimit: 0,
+              enableKeepAlive: true,
+              keepAliveInitialDelay: 10000
             }
           };
         } else {

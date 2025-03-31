@@ -1,27 +1,36 @@
+FROM node:18-alpine AS builder
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy application source
+COPY . .
+
+# Build application
+RUN npm run build
+
+# Production image
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package.json và package-lock.json
+# Copy package files and install only production dependencies
 COPY package*.json ./
+RUN npm ci --omit=dev
 
-# Cài đặt dependencies
-RUN npm install --production=false
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/upload ./upload
 
-# Cài đặt Nest CLI
-RUN npm install -g @nestjs/cli
+# Create upload directory if it doesn't exist
+RUN mkdir -p upload
 
-# Copy mã nguồn
-COPY . .
-
-# Build ứng dụng
-RUN npm run build
-
-# Môi trường sản xuất
-ENV NODE_ENV production
-
-# Mở cổng
+# Expose the port
 EXPOSE 3001
 
-# Chạy ứng dụng
+# Start the application
 CMD ["node", "dist/main.js"]

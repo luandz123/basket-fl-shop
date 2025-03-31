@@ -11,6 +11,12 @@ async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
     
+    // Add health check endpoint properly using HTTP adapter
+    const httpAdapter = app.getHttpAdapter();
+    httpAdapter.get('/health', (req, res) => {
+      res.status(200).send('OK');
+    });
+    
     // Log môi trường
     console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
     console.log(`DATABASE: ${process.env.MYSQLHOST || 'not set'}`);
@@ -18,6 +24,7 @@ async function bootstrap() {
     // CORS
     app.enableCors({
       origin: process.env.FRONTEND_URL || '*',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       credentials: true,
     });
     
