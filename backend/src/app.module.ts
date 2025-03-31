@@ -15,15 +15,16 @@ import { join } from 'path';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        // Phát hiện môi trường Railway
-        const isRailway = process.env.RAILWAY_STATIC_URL || 
-                         process.env.RAILWAY_ENVIRONMENT;
+        // Phát hiện môi trường Railway hoặc Vercel
+        const isProduction = process.env.VERCEL || 
+                           process.env.RAILWAY_STATIC_URL || 
+                           process.env.RAILWAY_ENVIRONMENT;
         
-        console.log('Môi trường:', isRailway ? 'Railway (Production)' : 'Local');
+        console.log('Môi trường:', isProduction ? 'Production (Vercel/Railway)' : 'Local');
         
-        if (isRailway) {
-          // Cấu hình cho Railway - sử dụng biến môi trường RAILWAY cung cấp
-          console.log('Sử dụng Railway Database');
+        if (isProduction) {
+          // Cấu hình cho Railway/Vercel - sử dụng biến môi trường cung cấp
+          console.log('Sử dụng Production Database');
           return {
             type: 'mysql',
             host: configService.get('MYSQLHOST', 'localhost'),
@@ -33,13 +34,16 @@ import { join } from 'path';
             database: configService.get('MYSQLDATABASE', 'railway'),
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: false, // Không đồng bộ schema trong production
-            ssl: configService.get('RAILWAY_DB_SSL') === 'true' ? {
+            ssl: configService.get('MYSQL_SSL') === 'true' ? {
               rejectUnauthorized: false,
             } : undefined,
             connectTimeout: 60000,
             retryAttempts: 10,
             retryDelay: 3000,
             logging: ['error', 'warn'],
+            extra: {
+              connectionLimit: 5 // Giới hạn kết nối cho serverless
+            }
           };
         } else {
           // Cấu hình local
