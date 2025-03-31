@@ -2,19 +2,26 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# Copy package.json và package-lock.json
 COPY package*.json ./
 
-# Cài đặt tất cả dependencies (bao gồm devDependencies) để build
-RUN npm install
+# Cài đặt dependencies
+RUN npm install --production=false
 
-# Cài đặt Nest CLI toàn cục
+# Cài đặt Nest CLI
 RUN npm install -g @nestjs/cli
 
+# Copy mã nguồn
 COPY . .
 
+# Build ứng dụng
 RUN npm run build
 
+# Môi trường sản xuất
+ENV NODE_ENV production
+
+# Mở cổng
 EXPOSE 3001
 
-# Thêm polyfill trước khi khởi chạy ứng dụng
-CMD ["node", "-r", "./polyfill.js", "dist/main"]
+# Chạy ứng dụng
+CMD ["node", "dist/main.js"]
