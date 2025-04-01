@@ -42,7 +42,7 @@ import { PaymentModule } from './payment/payment.module';
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: false, // Không đồng bộ schema trong production
             ssl: {
-              rejectUnauthorized: true, // Quan trọng cho Railway MySQL
+              rejectUnauthorized: false, // Quan trọng cho Railway MySQL
             },
             connectTimeout: 60000,
             retryAttempts: 15,
