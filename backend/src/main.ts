@@ -19,9 +19,14 @@ async function bootstrap() {
     
     // CORS
     app.enableCors({
-      origin: process.env.FRONTEND_URL || '*',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-      credentials: true,
+      origin: [
+        'https://luan25032005.vercel.app',
+        'http://localhost:3000',  // Cho phát triển cục bộ,
+        'https://luan25032005-dxzlzoupz-luan-nguyen-vans-projects.vercel.app',
+        "*"
+      ],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+      credentials: true
     });
     
     // Middleware

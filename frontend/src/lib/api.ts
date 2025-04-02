@@ -6,6 +6,7 @@ import {
 } from './auth';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+console.log('API URL being used:', BASE_URL);
 const apiClient = axios.create({
   baseURL: `${BASE_URL}/api`,
 });
